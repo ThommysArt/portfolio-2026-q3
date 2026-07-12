@@ -2,9 +2,11 @@ import { useEffect, type ReactNode } from "react"
 import Lenis from "lenis"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import "lenis/dist/lenis.css"
 
 gsap.registerPlugin(ScrollTrigger)
 
+/** Plain Lenis smooth scroll — no snap, no section locking. */
 export function SmoothScroll({ children }: { children: ReactNode }) {
   useEffect(() => {
     const lenis = new Lenis({

@@ -77,15 +77,15 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Mega name — more than half the page tall */}
-      <div className="relative flex min-h-0 flex-[0.58] items-end overflow-hidden">
+      {/* Mega name — more than half the page tall; leave breathing room at bottom */}
+      <div className="relative flex min-h-0 flex-[0.58] items-end overflow-hidden pb-8 md:pb-12 lg:pb-14">
         <div className="shell w-full">
           <h1
             className="hero-mega font-mega select-none text-foreground"
             style={{
-              /* Height-first: ~55–60svh letter box for 4 glyphs */
-              fontSize: "clamp(7.5rem, 58svh, 62svh)",
-              marginBottom: "-0.14em",
+              /* Slightly eased size so bottom padding never clips glyphs */
+              fontSize: "clamp(7rem, 52svh, 56svh)",
+              marginBottom: "-0.04em",
             }}
             aria-label={SITE.name}
           >

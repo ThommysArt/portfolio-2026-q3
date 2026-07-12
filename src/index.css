@@ -164,7 +164,9 @@
     font-feature-settings: "ss01", "ss02", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    /* clip avoids breaking position:sticky / ScrollTrigger pin spacing
+       (overflow-x: hidden creates a scroll containment side-effect) */
+    overflow-x: clip;
   }
 
   ::selection {
@@ -275,3 +277,5 @@
   opacity: 1;
   transform: translateY(-2px);
 }
+
+

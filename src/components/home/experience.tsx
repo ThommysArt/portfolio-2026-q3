@@ -39,14 +39,20 @@ export function ExperienceSection() {
   }, [])
 
   return (
-    <section ref={rootRef} id="experience" className="shell w-full py-20 md:py-28">
-      <SectionLabel index="02">Experience</SectionLabel>
+    <section
+      ref={rootRef}
+      id="experience"
+      className="shell flex h-[100svh] min-h-[100svh] w-full flex-col justify-center overflow-y-auto py-24 md:py-28"
+    >
+      <SectionLabel index="03" className="mb-6 md:mb-8">
+        Experience
+      </SectionLabel>
 
-      <div className="mb-12 grid gap-6 md:mb-16 md:grid-cols-12 md:gap-10 md:items-end">
+      <div className="mb-8 grid gap-5 md:mb-10 md:grid-cols-12 md:gap-10 md:items-end">
         <h2 className="font-display text-3xl font-medium tracking-tight md:col-span-6 md:text-5xl lg:text-6xl">
           Contract work, product craft, and shipping systems.
         </h2>
-        <div className="flex flex-col gap-5 md:col-span-6 md:items-end md:text-right">
+        <div className="flex flex-col gap-4 md:col-span-6 md:items-end md:text-right">
           <p className="text-sm leading-relaxed text-muted-foreground md:text-base md:max-w-md">
             Currently deep in{" "}
             <span className="text-foreground">Enderix Finance</span> — a modern ERP for
@@ -67,7 +73,7 @@ export function ExperienceSection() {
         </div>
       </div>
 
-      <div className="border-t border-border">
+      <div className="min-h-0 border-t border-border">
         {EXPERIENCE.map((job) => {
           const isOpen = openId === job.id
           return (

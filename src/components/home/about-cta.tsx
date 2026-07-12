@@ -1,29 +1,84 @@
 import { SITE } from "@/lib/projects"
+import { EXPERIENCE } from "@/lib/experience"
 import { SectionLabel } from "@/components/shared/section-label"
 import { Reveal } from "@/components/shared/reveal"
 import { Button } from "@/components/ui/button"
-import { ArrowUpRight } from "lucide-react"
+import { ArrowUpRight, Download } from "lucide-react"
+
+const FOCUS = [
+  {
+    title: "Product UI",
+    body: "Interfaces that feel considered — hierarchy, rhythm, and clarity over decoration.",
+  },
+  {
+    title: "Motion systems",
+    body: "Scroll, entrance, and micro-interaction design with GSAP, Lenis, and deliberate easing.",
+  },
+  {
+    title: "Full-stack craft",
+    body: "From ERP platforms to template systems — frontend ownership with real data models behind it.",
+  },
+]
+
+const HIGHLIGHTS = [
+  {
+    label: "Currently",
+    value: "Enderix Finance · reframe/ui",
+  },
+  {
+    label: "Based in",
+    value: SITE.locationLine,
+  },
+  {
+    label: "Working",
+    value: "Remote · Contract · Product",
+  },
+  {
+    label: "Roles shipped",
+    value: `${EXPERIENCE.length}+ engagements`,
+  },
+]
 
 export function AboutCta() {
   return (
-    <section id="about" className="shell w-full py-20 md:py-28">
-      <SectionLabel index="04">About</SectionLabel>
+    <section
+      id="about"
+      className="shell flex h-[100svh] min-h-[100svh] w-full flex-col justify-center overflow-y-auto py-24 md:py-28"
+    >
+      <SectionLabel index="01" className="mb-6 md:mb-8">
+        About
+      </SectionLabel>
 
       <Reveal>
-        <div className="grid gap-10 md:grid-cols-12 md:gap-12">
-          <div className="md:col-span-7">
-            <h2 className="font-display text-3xl font-medium tracking-tight md:text-5xl lg:text-[3.5rem] lg:leading-[1.05]">
+        <div className="grid gap-10 md:grid-cols-12 md:gap-12 lg:gap-14">
+          {/* Left — narrative */}
+          <div className="flex flex-col gap-6 md:col-span-7 lg:col-span-7 md:gap-7">
+            <h2 className="font-display text-3xl font-medium tracking-tight md:text-5xl lg:text-[3.25rem] lg:leading-[1.05]">
               Clean visuals.
               <br />
               <span className="text-foreground/40">Strong systems.</span>
               <br />
               Thoughtful motion.
             </h2>
-          </div>
-          <div className="flex flex-col justify-between gap-8 md:col-span-5">
-            <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
-              {SITE.summary}
-            </p>
+
+            <div className="max-w-xl space-y-3.5 text-sm leading-relaxed text-muted-foreground md:text-[15px]">
+              <p>{SITE.summary}</p>
+              <p>
+                Lately that means building{" "}
+                <span className="text-foreground/85">Enderix Finance</span> — a
+                modern ERP for Cameroonian enterprises — while shipping{" "}
+                <span className="text-foreground/85">reframe/ui</span>, a UI kit
+                aimed at Awwwards-level sites without the usual compromise on
+                production readiness.
+              </p>
+              <p className="hidden sm:block">
+                Before that: UI/UX consulting at Yaaki, a frontend internship at
+                Next-It Solutions, and a stream of templates — e-commerce, SaaS
+                landings, architecture studios, WebGL — as a playground for
+                motion and craft.
+              </p>
+            </div>
+
             <div className="flex flex-wrap gap-3">
               <Button
                 asChild
@@ -41,10 +96,59 @@ export function AboutCta() {
                 size="lg"
                 className="rounded-full border-foreground/20 font-display text-xs uppercase tracking-[0.18em]"
               >
-                <a href={SITE.socials.x} target="_blank" rel="noreferrer">
-                  Follow on X
+                <a href={SITE.resumeUrl} target="_blank" rel="noreferrer">
+                  Resume
+                  <Download className="h-3.5 w-3.5" />
                 </a>
               </Button>
+              <Button
+                asChild
+                variant="ghost"
+                size="lg"
+                className="rounded-full font-display text-xs uppercase tracking-[0.18em] text-muted-foreground hover:text-foreground"
+              >
+                <a href={SITE.socials.github} target="_blank" rel="noreferrer">
+                  GitHub
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </a>
+              </Button>
+            </div>
+          </div>
+
+          {/* Right — meta + focus */}
+          <div className="flex flex-col gap-8 md:col-span-5 lg:col-span-5">
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-5 border-t border-border pt-5">
+              {HIGHLIGHTS.map((item) => (
+                <div key={item.label}>
+                  <dt className="font-display text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                    {item.label}
+                  </dt>
+                  <dd className="mt-1.5 text-sm font-medium tracking-tight text-foreground/90">
+                    {item.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+
+            <div className="flex flex-col gap-0 border-t border-border">
+              {FOCUS.map((item, i) => (
+                <div
+                  key={item.title}
+                  className="grid grid-cols-[auto_1fr] gap-4 border-b border-border py-4"
+                >
+                  <span className="font-display pt-0.5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground tabular-nums">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h3 className="font-display text-sm font-medium tracking-tight md:text-base">
+                      {item.title}
+                    </h3>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                      {item.body}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
