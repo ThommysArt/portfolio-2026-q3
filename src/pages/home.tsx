@@ -4,7 +4,9 @@ import { SelectedProjects } from "@/components/home/selected-projects"
 import { ExperienceSection } from "@/components/home/experience"
 import { TechStack } from "@/components/home/tech-stack"
 import { Marquee } from "@/components/shared/marquee"
+import { MobileHome } from "@/components/mobile/mobile-home"
 import { FEATURED_PROJECTS } from "@/lib/projects"
+import { useIsMobile } from "@/hooks/use-is-mobile"
 
 const MARQUEE_TOP = [
   "Selected work",
@@ -24,8 +26,7 @@ const MARQUEE_BOTTOM = [
   ...FEATURED_PROJECTS.flatMap((p) => p.categories),
 ]
 
-/** Home composition — Lenis handles smooth scroll only (no section lock). */
-export function HomePage() {
+function DesktopHome() {
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Hero />
@@ -36,8 +37,18 @@ export function HomePage() {
       <Marquee items={MARQUEE_BOTTOM} reverse />
 
       <ExperienceSection />
-      {/* Stack includes compact footer — one screen together */}
       <TechStack />
     </div>
   )
+}
+
+/** Home — separate mobile UI tree (no 100svh locks / scroll-hijack gallery). */
+export function HomePage() {
+  const isMobile = useIsMobile()
+
+  if (isMobile) {
+    return <MobileHome />
+  }
+
+  return <DesktopHome />
 }

@@ -211,8 +211,8 @@ export const SITE = {
     instagram: "https://instagram.com/thommysart21",
     github: "https://github.com/thommysart",
   },
-  ogImage:
-    "https://woefz3en0n.ufs.sh/f/l5G0dZjh6GZmW5omT7HgxDRICQGvpalitK8YqhmsSrWn3PUj",
+  /** Absolute URL preferred for social crawlers; relative works after deploy on same origin */
+  ogImage: "https://thommysart.me/og.png",
   avatar:
     "https://woefz3en0n.ufs.sh/f/l5G0dZjh6GZmW5omT7HgxDRICQGvpalitK8YqhmsSrWn3PUj",
   tagline: "I design and build feature-rich interfaces with thoughtful motion.",

@@ -6,9 +6,27 @@ import "lenis/dist/lenis.css"
 
 gsap.registerPlugin(ScrollTrigger)
 
-/** Plain Lenis smooth scroll — no snap, no section locking. */
+/**
+ * Lenis only on desktop pointer devices.
+ * Mobile uses native scroll — avoids fighting touch, sticky galleries,
+ * and address-bar viewport jumps.
+ */
 export function SmoothScroll({ children }: { children: ReactNode }) {
   useEffect(() => {
+    const coarse =
+      typeof window !== "undefined" &&
+      window.matchMedia("(pointer: coarse)").matches
+    const narrow =
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 767px)").matches
+
+    if (coarse || narrow) {
+      // Keep ScrollTrigger in sync with native scroll
+      const onScroll = () => ScrollTrigger.update()
+      window.addEventListener("scroll", onScroll, { passive: true })
+      return () => window.removeEventListener("scroll", onScroll)
+    }
+
     const lenis = new Lenis({
       duration: 1.15,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),

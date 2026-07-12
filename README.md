@@ -15,8 +15,13 @@ Minimal black & white portfolio with refined typography and motion-first interac
 
 | Route   | Content |
 |---------|---------|
-| `/`     | Entry loader → Hero, Selected work (4), Experience, Tech stack, About |
-| `/work` | Full project archive (list + expand + cursor preview) |
+| `/`     | Entry loader → Hero, About, Selected work, Experience, Tech stack |
+| `/work` | Full project archive (desktop: list + cursor preview · mobile: cards) |
+| `*`     | 404 |
+
+**Mobile** uses a dedicated UI tree (`src/components/mobile/`) — natural document flow, no `100svh` section locks, no scroll-hijacked horizontal gallery. Desktop keeps the sticky gallery + marquees.
+
+**Social** — `public/og.png` (1200×630) wired as Open Graph / Twitter card.
 
 ## Develop
 

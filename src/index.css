@@ -278,4 +278,19 @@
   transform: translateY(-2px);
 }
 
+/* Prefer reduced motion — kill heavy scroll-driven motion cues */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .will-change-transform {
+    will-change: auto;
+  }
+}
+
+/* Safe area for notched phones (mobile home padding) */
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
 
