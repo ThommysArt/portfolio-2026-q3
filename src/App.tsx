@@ -4,6 +4,7 @@ import { SmoothScroll } from "@/components/layout/smooth-scroll"
 import { EntryTransition } from "@/components/layout/entry-transition"
 import { PageTransitionProvider } from "@/components/layout/page-transition"
 import { Navbar } from "@/components/layout/navbar"
+import { CustomCursor } from "@/components/layout/custom-cursor"
 import { HomePage } from "@/pages/home"
 import { WorkPage } from "@/pages/work"
 import { NotFoundPage } from "@/pages/not-found"
@@ -16,6 +17,7 @@ export default function App() {
           <PageTransitionProvider>
             <div className="grain dark min-h-screen bg-background text-foreground">
               <EntryTransition durationMs={1600} bars={6} />
+              <CustomCursor />
               <Navbar />
               <main className="relative w-full">
                 <Routes>

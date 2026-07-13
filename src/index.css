@@ -278,6 +278,11 @@
   transform: translateY(-2px);
 }
 
+/* Scroll-opacity text lines (SplitText) */
+.sop-text .sop-line {
+  will-change: opacity;
+}
+
 /* Prefer reduced motion — kill heavy scroll-driven motion cues */
 @media (prefers-reduced-motion: reduce) {
   html {

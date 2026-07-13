@@ -4,6 +4,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { ArrowUpRight } from "lucide-react"
 import { FEATURED_PROJECTS } from "@/lib/projects"
 import { SectionLabel } from "@/components/shared/section-label"
+import { AutoVideo } from "@/components/shared/auto-video"
+import { Magnetic } from "@/components/shared/magnetic"
 import { usePageTransition } from "@/components/layout/page-transition"
 
 gsap.registerPlugin(ScrollTrigger)
@@ -14,6 +16,9 @@ gsap.registerPlugin(ScrollTrigger)
  * Cards share a fixed media height (equal row) while width follows
  * each asset's aspect via h-full + w-auto — so nothing balloons to
  * full viewport width. Sticky + section height for Lenis-safe spacing.
+ *
+ * Videos use shared IntersectionObserver (AutoVideo) — only the
+ * near-viewport card decodes/plays.
  */
 export function SelectedProjects() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -30,14 +35,12 @@ export function SelectedProjects() {
     let lastIndex = -1
 
     const getDistance = () => {
-      // Full track minus one viewport — how far we must translate X
       return Math.max(0, track.scrollWidth - window.innerWidth)
     }
 
     let lastHeight = ""
     const applySectionHeight = () => {
       const distance = getDistance()
-      // 1:1 vertical scroll → horizontal travel; tiny buffer for last card
       const next = `${window.innerHeight + distance + 32}px`
       if (next === lastHeight) return
       lastHeight = next
@@ -107,7 +110,6 @@ export function SelectedProjects() {
       el.addEventListener("load", refresh)
     })
 
-    // Catch late layout shifts once intrinsic sizes resolve
     const ro = new ResizeObserver(() => {
       applySectionHeight()
       ScrollTrigger.refresh()
@@ -134,9 +136,7 @@ export function SelectedProjects() {
 
   return (
     <section ref={sectionRef} id="selected" className="relative w-full">
-      {/* Sticky viewport — height of outer section drives horizontal progress */}
       <div className="sticky top-0 flex h-[100svh] w-full flex-col overflow-hidden bg-background">
-        {/* Header */}
         <div className="projects-chrome shell shrink-0 pt-24 md:pt-28">
           <SectionLabel index="02" className="mb-5 md:mb-6">
             Selected work
@@ -146,22 +146,21 @@ export function SelectedProjects() {
             <h2 className="font-display max-w-2xl text-2xl font-medium tracking-tight md:text-4xl lg:text-5xl">
               Scroll to explore the work.
             </h2>
-            <button
-              type="button"
-              onClick={() => navigateWithTransition("/work")}
-              className="group inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:text-foreground"
-            >
-              View archive
-              <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </button>
+            <Magnetic strength={0.2} max={10}>
+              <button
+                type="button"
+                data-cursor="view"
+                data-cursor-label="Archive"
+                onClick={() => navigateWithTransition("/work")}
+                className="group inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:text-foreground"
+              >
+                View archive
+                <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </button>
+            </Magnetic>
           </div>
         </div>
 
-        {/*
-          Track is vertically centered. Media uses a capped shared height
-          so every card is equal height but only ~½–⅔ viewport wide
-          (height × aspect), not full screen width.
-        */}
         <div className="relative flex min-h-0 flex-1 items-center overflow-hidden">
           <div
             ref={trackRef}
@@ -173,21 +172,18 @@ export function SelectedProjects() {
                 href={project.url}
                 target="_blank"
                 rel="noreferrer"
+                data-cursor="view"
+                data-cursor-label="Open"
                 className="project-card group relative flex w-max shrink-0 flex-col"
               >
-                {/* Fixed media height → shared row; width from aspect */}
                 <div
                   className="relative w-max overflow-hidden rounded-sm bg-muted ring-1 ring-border
                     h-[240px] sm:h-[280px] md:h-[340px] lg:h-[400px] xl:h-[440px]"
                 >
                   {project.video ? (
-                    <video
+                    <AutoVideo
                       src={project.video}
                       poster={project.images[0]}
-                      muted
-                      loop
-                      playsInline
-                      autoPlay
                       className="img-bw block h-full w-auto max-w-none transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.02]"
                     />
                   ) : (
@@ -224,35 +220,39 @@ export function SelectedProjects() {
               </a>
             ))}
 
-            {/* End CTA — solid inverted panel, same media height as project cards */}
-            <button
-              type="button"
-              onClick={() => navigateWithTransition("/work")}
-              className="group relative flex w-[min(72vw,20rem)] shrink-0 flex-col md:w-80"
-            >
-              <div
-                className="flex flex-col items-center justify-center rounded-sm bg-foreground px-8 text-center text-background ring-1 ring-foreground transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.02]
-                  h-[240px] sm:h-[280px] md:h-[340px] lg:h-[400px] xl:h-[440px]"
+            <Magnetic strength={0.18} max={12} className="shrink-0">
+              <button
+                type="button"
+                data-cursor="view"
+                data-cursor-label="All"
+                onClick={() => navigateWithTransition("/work")}
+                className="group relative flex w-max shrink-0 flex-col"
               >
-                <span className="font-display text-[10px] uppercase tracking-[0.32em] text-background/55 md:text-xs">
-                  Archive
-                </span>
-                <span className="mt-4 font-display text-2xl font-medium tracking-tight md:text-3xl lg:text-4xl">
-                  All projects
-                </span>
-                <span className="mt-2 max-w-[14rem] text-sm text-background/55">
-                  Browse the full body of work
-                </span>
-                <span className="mt-8 inline-flex h-12 w-12 items-center justify-center rounded-full bg-background text-foreground transition-transform duration-500 group-hover:rotate-45 md:h-14 md:w-14">
-                  <ArrowUpRight className="h-5 w-5" />
-                </span>
-              </div>
-              <div className="mt-4 h-[3.25rem] md:mt-5 md:h-[3.5rem]" aria-hidden />
-            </button>
+                {/* Same media height as project cards + 16:9 so width matches typical work */}
+                <div
+                  className="flex aspect-video flex-col items-center justify-center rounded-sm bg-foreground px-8 text-center text-background ring-1 ring-foreground transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.02]
+                    h-[240px] w-auto sm:h-[280px] md:h-[340px] lg:h-[400px] xl:h-[440px]"
+                >
+                  <span className="font-display text-[10px] uppercase tracking-[0.32em] text-background/55 md:text-xs">
+                    Archive
+                  </span>
+                  <span className="mt-4 font-display text-2xl font-medium tracking-tight md:text-3xl lg:text-4xl">
+                    All projects
+                  </span>
+                  <span className="mt-2 max-w-[16rem] text-sm text-background/55">
+                    Browse the full body of work
+                  </span>
+                  <span className="mt-8 inline-flex h-12 w-12 items-center justify-center rounded-full bg-background text-foreground transition-transform duration-500 group-hover:rotate-45 md:h-14 md:w-14">
+                    <ArrowUpRight className="h-5 w-5" />
+                  </span>
+                </div>
+                {/* Caption slot — matches project meta row height */}
+                <div className="mt-4 h-[3.25rem] md:mt-5 md:h-[3.5rem]" aria-hidden />
+              </button>
+            </Magnetic>
           </div>
         </div>
 
-        {/* Progress */}
         <div className="projects-chrome shell shrink-0 py-5 md:py-6">
           <div className="flex items-center gap-4 md:gap-6">
             <span className="font-display w-14 shrink-0 text-[10px] uppercase tracking-[0.2em] text-muted-foreground tabular-nums md:w-16">

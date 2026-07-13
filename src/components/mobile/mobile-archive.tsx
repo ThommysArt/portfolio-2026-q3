@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "motion/react"
 import { ArrowLeft, ArrowUpRight, ChevronDown } from "lucide-react"
 import { PROJECTS, type Project } from "@/lib/projects"
 import { SectionLabel } from "@/components/shared/section-label"
+import { AutoVideo } from "@/components/shared/auto-video"
 import { Button } from "@/components/ui/button"
 import { usePageTransition } from "@/components/layout/page-transition"
 import { cn } from "@/lib/utils"
@@ -121,15 +122,10 @@ function MobileProjectCard({
 
               <div className="mt-3 overflow-hidden rounded-sm bg-muted ring-1 ring-border">
                 {project.video ? (
-                  <video
+                  <AutoVideo
                     src={project.video}
                     poster={project.images[0]}
                     className="aspect-video w-full object-cover"
-                    loop
-                    muted
-                    playsInline
-                    autoPlay
-                    preload="metadata"
                   />
                 ) : (
                   <img

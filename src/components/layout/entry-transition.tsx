@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react"
 import gsap from "gsap"
-import { SITE } from "@/lib/projects"
+import { SITE, FEATURED_PROJECTS } from "@/lib/projects"
+import { preloadCritical } from "@/lib/preload"
 import { cn } from "@/lib/utils"
 
 const ENTRY_KEY = "portfolio-entry-seen"
@@ -11,8 +12,14 @@ interface EntryTransitionProps {
   onComplete?: () => void
 }
 
+function criticalImages() {
+  const fromFeatured = FEATURED_PROJECTS.flatMap((p) => p.images.slice(0, 1))
+  if (SITE.avatar) fromFeatured.push(SITE.avatar)
+  return fromFeatured
+}
+
 export function EntryTransition({
-  durationMs = 1800,
+  durationMs = 1600,
   bars = 6,
   onComplete,
 }: EntryTransitionProps) {
@@ -28,93 +35,109 @@ export function EntryTransition({
   const fillRef = useRef<HTMLDivElement>(null)
   const percentRef = useRef<HTMLSpanElement>(null)
   const stairsRefs = useRef<(HTMLDivElement | null)[]>([])
+  const progressProxy = useRef({ value: 0 })
 
   useLayoutEffect(() => {
     if (done || !rootRef.current) return
 
     let completed = false
+    let cancelled = false
     const ctx = gsap.context(() => {
       gsap.set(stairsRefs.current, { yPercent: 0, opacity: 1 })
-      if (fillRef.current) gsap.set(fillRef.current, { scaleX: 0, transformOrigin: "left center" })
+      if (fillRef.current) {
+        gsap.set(fillRef.current, { scaleX: 0, transformOrigin: "left center" })
+      }
 
-      const counter = { value: 0 }
-      const tl = gsap.timeline({
-        onComplete: () => {
-          completed = true
-          try {
-            sessionStorage.setItem(ENTRY_KEY, "1")
-          } catch {
-            /* ignore */
-          }
-          setDone(true)
-          onComplete?.()
-        },
+      // Letter reveal plays immediately (presentation)
+      gsap.from(".entry-char", {
+        yPercent: 110,
+        opacity: 0,
+        duration: 0.7,
+        ease: "power3.out",
+        stagger: 0.025,
+        delay: 0.1,
       })
 
-      tl.to(
-        counter,
-        {
-          value: 100,
-          duration: durationMs / 1000,
-          ease: "none",
-          onUpdate: () => {
-            if (percentRef.current) {
-              percentRef.current.textContent = `${Math.round(counter.value)}`
+      const setVisualProgress = (p: number) => {
+        const clamped = Math.max(0, Math.min(1, p))
+        progressProxy.current.value = clamped
+        if (percentRef.current) {
+          percentRef.current.textContent = `${Math.round(clamped * 100)}`
+        }
+        if (fillRef.current) {
+          gsap.set(fillRef.current, { scaleX: clamped })
+        }
+      }
+
+      // Smoothly ease visual progress toward real load progress
+      let target = 0
+      const smooth = gsap.ticker.add(() => {
+        const cur = progressProxy.current.value
+        const next = cur + (target - cur) * 0.12
+        if (Math.abs(next - cur) > 0.001) setVisualProgress(next)
+      })
+
+      const finishIntro = () => {
+        if (completed || cancelled) return
+        completed = true
+        gsap.ticker.remove(smooth)
+        setVisualProgress(1)
+
+        const tl = gsap.timeline({
+          onComplete: () => {
+            try {
+              sessionStorage.setItem(ENTRY_KEY, "1")
+            } catch {
+              /* ignore */
             }
+            setDone(true)
+            onComplete?.()
           },
-        },
-        0,
-      )
+        })
 
-      tl.to(
-        fillRef.current,
-        {
-          scaleX: 1,
-          duration: durationMs / 1000,
-          ease: "none",
-        },
-        0,
-      )
+        tl.to(
+          centerRef.current,
+          {
+            autoAlpha: 0,
+            y: -12,
+            duration: 0.35,
+            ease: "power2.in",
+          },
+          0.05,
+        )
 
-      // Title letter reveal
-      tl.from(
-        ".entry-char",
-        {
-          yPercent: 110,
-          opacity: 0,
-          duration: 0.7,
-          ease: "power3.out",
-          stagger: 0.025,
-        },
-        0.15,
-      )
+        // Stairs rise up (Olivier Larose style curtain)
+        tl.to(
+          stairsRefs.current,
+          {
+            yPercent: -101,
+            duration: 0.85,
+            ease: "power4.inOut",
+            stagger: { each: 0.07, from: "start" },
+          },
+          0.1,
+        )
+      }
 
-      tl.to(
-        centerRef.current,
-        {
-          autoAlpha: 0,
-          y: -12,
-          duration: 0.35,
-          ease: "power2.in",
+      // Real preload — progress drives the bar; min display handled inside
+      void preloadCritical({
+        images: criticalImages(),
+        minMs: Math.min(durationMs, 1100),
+        maxMs: Math.max(durationMs + 1800, 3600),
+        onProgress: ({ progress, done: loadDone }) => {
+          if (cancelled) return
+          target = Math.max(target, progress)
+          if (loadDone) {
+            target = 1
+            // Let the bar ease to 100 briefly, then exit
+            gsap.delayedCall(0.2, finishIntro)
+          }
         },
-        durationMs / 1000,
-      )
-
-      // Stairs rise up (Olivier Larose style curtain)
-      tl.to(
-        stairsRefs.current,
-        {
-          yPercent: -101,
-          duration: 0.85,
-          ease: "power4.inOut",
-          stagger: { each: 0.07, from: "start" },
-        },
-        durationMs / 1000 + 0.05,
-      )
+      })
     }, rootRef)
 
     return () => {
-      // Only tear down mid-flight (StrictMode remount). If already done, leave state.
+      cancelled = true
       if (!completed) ctx.revert()
     }
   }, [bars, durationMs, onComplete, done])
@@ -175,7 +198,9 @@ export function EntryTransition({
             ref={(el) => {
               stairsRefs.current[i] = el
             }}
-            className={cn("h-full bg-background border-r border-foreground/[0.04] last:border-r-0")}
+            className={cn(
+              "h-full bg-background border-r border-foreground/[0.04] last:border-r-0",
+            )}
             style={{ width: `${100 / bars}%` }}
           />
         ))}

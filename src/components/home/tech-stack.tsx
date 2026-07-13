@@ -5,6 +5,8 @@ import { ArrowUpRight } from "lucide-react"
 import { TECH_STACK } from "@/lib/tech"
 import { SITE } from "@/lib/projects"
 import { SectionLabel } from "@/components/shared/section-label"
+import { ScrollOpacityText } from "@/components/shared/scroll-opacity-text"
+import { Magnetic } from "@/components/shared/magnetic"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
 import {
@@ -57,9 +59,14 @@ export function TechStack() {
         </SectionLabel>
 
         <div className="mb-8 flex flex-col gap-3 md:mb-10 md:flex-row md:items-end md:justify-between">
-          <h2 className="font-display text-2xl font-medium tracking-tight md:text-4xl lg:text-[2.75rem]">
+          <ScrollOpacityText
+            as="h2"
+            className="font-display text-2xl font-medium tracking-tight md:text-4xl lg:text-[2.75rem]"
+            minOpacity={0.18}
+            falloff={0.45}
+          >
             Tools I reach for daily.
-          </h2>
+          </ScrollOpacityText>
           <p className="max-w-sm text-sm text-muted-foreground">
             Monochrome for synergy — the same set across product, motion, and systems
             work.
@@ -74,6 +81,8 @@ export function TechStack() {
                   href={tech.href}
                   target="_blank"
                   rel="noreferrer"
+                  data-cursor="external"
+                  data-cursor-label={tech.name}
                   className="tech-btn group flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card/40 transition-colors hover:border-foreground/40 hover:bg-secondary md:h-14 md:w-14"
                   aria-label={tech.name}
                 >
@@ -97,15 +106,19 @@ export function TechStack() {
           ))}
         </div>
 
-        {/* Closing band — fills the unit without bloating the footer */}
         <div className="mt-10 flex flex-col gap-6 border-t border-border pt-8 md:mt-12 md:flex-row md:items-end md:justify-between md:pt-10">
           <div className="max-w-md">
             <p className="font-display text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
               Open to work
             </p>
-            <p className="mt-2 font-display text-xl font-medium tracking-tight md:text-2xl">
+            <ScrollOpacityText
+              as="p"
+              className="mt-2 font-display text-xl font-medium tracking-tight md:text-2xl"
+              minOpacity={0.2}
+              falloff={0.4}
+            >
               Building the next interface.
-            </p>
+            </ScrollOpacityText>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               Available for product UI, motion systems, and selective full-stack
               contracts — remote from {SITE.location}.
@@ -113,26 +126,40 @@ export function TechStack() {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Button
-              asChild
-              size="lg"
-              className="rounded-full font-display text-xs uppercase tracking-[0.18em]"
-            >
-              <a href={`mailto:${SITE.email}`}>
-                {SITE.email}
-                <ArrowUpRight className="h-3.5 w-3.5" />
-              </a>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="rounded-full border-foreground/20 font-display text-xs uppercase tracking-[0.18em]"
-            >
-              <a href={SITE.resumeUrl} target="_blank" rel="noreferrer">
-                Resume
-              </a>
-            </Button>
+            <Magnetic>
+              <Button
+                asChild
+                size="lg"
+                className="rounded-full font-display text-xs uppercase tracking-[0.18em]"
+              >
+                <a
+                  href={`mailto:${SITE.email}`}
+                  data-cursor="hover"
+                  data-cursor-label="Mail"
+                >
+                  {SITE.email}
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </a>
+              </Button>
+            </Magnetic>
+            <Magnetic strength={0.22}>
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="rounded-full border-foreground/20 font-display text-xs uppercase tracking-[0.18em]"
+              >
+                <a
+                  href={SITE.resumeUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  data-cursor="external"
+                  data-cursor-label="CV"
+                >
+                  Resume
+                </a>
+              </Button>
+            </Magnetic>
           </div>
         </div>
       </div>

@@ -11,6 +11,7 @@ import { SITE, FEATURED_PROJECTS } from "@/lib/projects"
 import { EXPERIENCE } from "@/lib/experience"
 import { TECH_STACK } from "@/lib/tech"
 import { SectionLabel } from "@/components/shared/section-label"
+import { AutoVideo } from "@/components/shared/auto-video"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Footer } from "@/components/layout/footer"
@@ -232,14 +233,9 @@ function MobileProjects() {
             >
               <div className="relative aspect-[16/10] overflow-hidden rounded-sm bg-muted ring-1 ring-border">
                 {project.video ? (
-                  <video
+                  <AutoVideo
                     src={project.video}
                     poster={project.images[0]}
-                    muted
-                    loop
-                    playsInline
-                    autoPlay
-                    preload="metadata"
                     className="img-bw h-full w-full object-cover"
                   />
                 ) : (
